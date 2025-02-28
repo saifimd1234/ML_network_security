@@ -178,3 +178,14 @@ pip install -r requirements.txt
 - `requirements.txt` is for explicitly listing dependencies for installation.
 - The `-e .` flag in `requirements.txt` ties it to `setup.py`, enabling editable installation.
 
+Certainly! Here's a brief overview of both:
+
+1. **PyMongo**:
+   - **Use**: PyMongo is a Python library used to interact with MongoDB, a NoSQL database. It allows developers to connect to MongoDB, perform operations like inserting, updating, querying, and deleting data, and manage databases and collections programmatically.
+   - **Key Features**: Provides an easy-to-use API for MongoDB commands, supports advanced features like aggregation pipelines, and handles data encoding/decoding between Python and MongoDB formats.
+
+2. **Certifi**:
+   - **Use**: Certifi is a Python package that provides a curated collection of trusted root certificates for SSL/TLS verification. It ensures secure HTTPS connections when accessing remote servers or databases.
+   - **Importance with PyMongo**: When connecting to a MongoDB instance (especially on the cloud, like MongoDB Atlas), certifi helps verify the server’s SSL certificate, ensuring a secure connection.
+
+In summary, PyMongo is for database operations, while certifi ensures secure, trusted communication between your application and the database. Let me know if you'd like examples or more details!
