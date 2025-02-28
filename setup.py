@@ -26,4 +26,11 @@ def get_requirements() -> List[str]:
 
     return requirement_lst
 
-print(get_requirements())
+setup(
+    name="ML_Network_Security",
+    version="0.0.1",
+    author="Mohammad Saifi",
+    author_email="saifimd1234@gmail.com",
+    packages=find_packages(),
+    install_requires=get_requirements(),
+)
