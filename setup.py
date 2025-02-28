@@ -25,3 +25,5 @@ def get_requirements() -> List[str]:
         print('Requirements file not found.')
 
     return requirement_lst
+
+print(get_requirements())
