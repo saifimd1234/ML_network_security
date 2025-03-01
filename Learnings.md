@@ -1,3 +1,45 @@
+Yes, the function can be simplified while retaining its functionality. Here's a more concise version of your `get_requirements` function:
+
+```python
+import os
+from typing import List
+
+def get_requirements() -> List[str]:
+    '''
+    Reads requirements.txt and returns a list of requirements to be installed.
+    '''
+    requirements_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'requirements.txt')
+    try:
+        with open(requirements_path, 'r') as file:
+            return [line.strip() for line in file if line.strip() and line.strip() != '-e .']
+    except FileNotFoundError:
+        print('Requirements file not found.')
+        return []
+```
+
+### Simplifications:
+1. **One-Line List Comprehension**:
+   - Combines the reading, stripping, filtering, and appending into a single list comprehension: `[line.strip() for line in file if line.strip() and line.strip() != '-e .']`.
+
+2. **Dynamic File Path**:
+   - Ensures the function works regardless of where it's called by dynamically determining the absolute path to `requirements.txt`.
+
+3. **Return Statement**:
+   - Directly returns the list of requirements instead of using an intermediate list (`requirement_lst`).
+
+4. **Error Handling**:
+   - Keeps `FileNotFoundError` handling for missing files but simplifies the `print` statement and ensures an empty list is returned.
+
+### Usage Example:
+- Place this function in your `setup.py` file.
+- Ensure `requirements.txt` is in the same directory.
+- Call the function and check:
+   ```python
+   print(get_requirements())  # Outputs the list of requirements
+   ```
+
+This version is not only concise but also clear and easy to understand, making it ideal for simple use cases. 
+
 The use of `if __name__ == "__main__":` in Python determines whether a script is being run directly or being imported as a module. However, in your case, whether you include it or not, you are running `python setup.py`, which executes the script in the same way each time, so you see the same result.
 
 ### **Understanding `if __name__ == "__main__":`**
@@ -237,3 +279,45 @@ DEBUG=True
 ```
 
 These variables can then be accessed programmatically, avoiding hardcoding them into your codebase. 
+
+The two code snippets you provided achieve similar outcomes (converting a DataFrame to a list of records) but use different methods. Here's a breakdown of the differences:
+
+### **1. `data.to_dict(orient='records')`**:
+- **Method**: Uses the `to_dict` method with the `orient='records'` argument.
+- **Outcome**: Converts the DataFrame into a list of dictionaries, where each dictionary represents a row in the DataFrame.
+- **Efficiency**: Generally more efficient and straightforward for converting DataFrames to a list of records.
+- **Example**:
+  ```python
+  return data.to_dict(orient='records')
+  ```
+  ```json
+  [
+    {"column1": "value1", "column2": "value2"},
+    {"column1": "value3", "column2": "value4"}
+  ]
+  ```
+
+### **2. `json.loads(data.T.to_json()).values()`**:
+- **Method**: First transposes the DataFrame (`data.T`), converts it to JSON, then parses the JSON string back into a Python dictionary and extracts the values.
+- **Outcome**: Produces a list of dictionaries, similar to the first method, but involves extra steps and more transformations.
+- **Complexity**: More complex due to the additional JSON serialization and deserialization steps.
+- **Example**:
+  ```python
+  records = json.loads(data.T.to_json()).values()
+  return list(records)
+  ```
+  ```json
+  [
+    {"column1": "value1", "column2": "value2"},
+    {"column1": "value3", "column2": "value4"}
+  ]
+  ```
+
+### **Comparison**:
+- **Performance**: `to_dict(orient='records')` is generally faster and less resource-intensive since it directly converts the DataFrame to the desired format without additional intermediate steps.
+- **Readability**: `to_dict(orient='records')` is more readable and easier to understand, which is beneficial for code maintenance and collaboration.
+
+### **Recommendation**:
+- **Use `to_dict(orient='records')`**: It’s simpler, more efficient, and more readable for converting a DataFrame to a list of dictionaries.
+
+Let me know if you need further clarification or have any additional questions!
