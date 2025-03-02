@@ -385,3 +385,104 @@ The `main.py` script orchestrates the data ingestion process for the network sec
 
 ### Exception Handling
 - If any exception occurs during the process, it is caught and a `NetworkSecurityException` is raised with the relevant error details.
+
+
+## Data Drift
+
+Data drift occurs when the statistical properties of the input data change over time, causing machine learning models to become less accurate. This happens because the model was trained on data with specific characteristics, and when those characteristics change, the model's assumptions become invalid.
+
+### Types of Data Drift:
+1. **Feature drift**: Changes in the distribution of input features
+2. **Concept drift**: Changes in the relationship between input features and the target variable
+3. **Label drift**: Changes in the distribution of the target variable
+
+## Detecting Data Drift with SciPy
+
+SciPy provides several statistical tests that can help detect data drift:
+
+### 1. Kolmogorov-Smirnov (K-S) Test
+```python
+from scipy import stats
+
+def detect_drift_ks(reference_data, current_data, feature, threshold=0.05):
+    """
+    Detect drift using Kolmogorov-Smirnov test
+    
+    Args:
+        reference_data: DataFrame containing baseline data
+        current_data: DataFrame containing new data to check for drift
+        feature: Column name to test
+        threshold: p-value threshold for significance
+        
+    Returns:
+        boolean: True if drift detected
+    """
+    statistic, p_value = stats.ks_2samp(
+        reference_data[feature].dropna(), 
+        current_data[feature].dropna()
+    )
+    
+    # If p-value is less than threshold, distributions are significantly different
+    drift_detected = p_value < threshold
+    return drift_detected, p_value, statistic
+```
+
+### 2. Chi-Square Test (for categorical features)
+```python
+def detect_drift_chi2(reference_data, current_data, feature, threshold=0.05):
+    """Detect drift in categorical features using Chi-Square test"""
+    # Get frequency distributions
+    ref_counts = reference_data[feature].value_counts(normalize=True)
+    curr_counts = current_data[feature].value_counts(normalize=True)
+    
+    # Align categories
+    all_categories = sorted(set(ref_counts.index) | set(curr_counts.index))
+    
+    # Convert to arrays with same categories
+    ref_array = np.array([ref_counts.get(cat, 0) for cat in all_categories])
+    curr_array = np.array([curr_counts.get(cat, 0) for cat in all_categories])
+    
+    # Perform chi-square test
+    statistic, p_value = stats.chisquare(curr_array, ref_array)
+    
+    drift_detected = p_value < threshold
+    return drift_detected, p_value, statistic
+```
+
+### 3. Jensen-Shannon Distance
+```python
+from scipy.spatial import distance
+
+def detect_drift_js(reference_data, current_data, feature, threshold=0.1):
+    """Detect drift using Jensen-Shannon distance"""
+    # Calculate distributions (can use histograms for continuous variables)
+    if reference_data[feature].dtype == 'object':
+        # For categorical 
+        ref_dist = reference_data[feature].value_counts(normalize=True)
+        curr_dist = current_data[feature].value_counts(normalize=True)
+        
+        # Align categories
+        all_cats = sorted(set(ref_dist.index) | set(curr_dist.index))
+        ref_array = np.array([ref_dist.get(cat, 0) for cat in all_cats])
+        curr_array = np.array([curr_dist.get(cat, 0) for cat in all_cats])
+    else:
+        # For numerical, create histograms with same bins
+        hist_bins = 10
+        min_val = min(reference_data[feature].min(), current_data[feature].min())
+        max_val = max(reference_data[feature].max(), current_data[feature].max())
+        bins = np.linspace(min_val, max_val, hist_bins+1)
+        
+        ref_hist, _ = np.histogram(reference_data[feature].dropna(), bins=bins, density=True)
+        curr_hist, _ = np.histogram(current_data[feature].dropna(), bins=bins, density=True)
+        
+        ref_array = ref_hist
+        curr_array = curr_hist
+    
+    # Calculate JS distance
+    js_distance = distance.jensenshannon(ref_array, curr_array)
+    
+    drift_detected = js_distance > threshold
+    return drift_detected, js_distance
+```
+
+You can apply these tests to each feature in your dataset to identify which features are experiencing drift, and then generate a comprehensive drift report for your data validation step.
