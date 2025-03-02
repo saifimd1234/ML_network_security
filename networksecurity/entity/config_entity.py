@@ -6,18 +6,45 @@ from networksecurity.constant import training_pipeline
 print(training_pipeline.PIPELINE_NAME)
 
 class TrainingPipelineConfig:
+    """
+    Configuration class for the overall training pipeline that manages artifact directories
+    and timestamps.
+    """
+
     def __init__(self,timestamp=datetime.now()):
-        timestamp=timestamp.strftime("%m_%d_%Y_%H_%M_%S")
-        self.pipeline_name=training_pipeline.PIPELINE_NAME
-        self.artifact_name=training_pipeline.ARTIFACT_DIR
-        self.artifact_dir=os.path.join(self.artifact_name,timestamp)
-        self.model_dir=os.path.join("final_model")
-        self.timestamp: str=timestamp
+        """
+        Initialize the TrainingPipelineConfig with timestamp and directory paths.
+        
+        Args:
+            timestamp (datetime, optional): Timestamp for identifying artifacts. Defaults to current time.
+        """
+        
+        if timestamp is None:
+            timestamp = datetime.now()
+        timestamp = timestamp.strftime("%m_%d_%Y_%H_%M_%S")
+        self.pipeline_name = training_pipeline.PIPELINE_NAME
+        self.artifact_name = training_pipeline.ARTIFACT_DIR
+        self.artifact_dir = os.path.join(self.artifact_name, timestamp)
+        self.model_dir = os.path.join("final_model")
+        self.timestamp: str = timestamp
 
 
 
 class DataIngestionConfig:
+    """
+    Configuration class for the data ingestion process that defines file paths and parameters
+    for data extraction and storage.
+    """
+
     def __init__(self,training_pipeline_config:TrainingPipelineConfig):
+        """
+        Initialize the DataIngestionConfig with necessary file paths and parameters.
+        
+        Args:
+            training_pipeline_config (TrainingPipelineConfig): Configuration object containing
+                base artifact directory and other pipeline settings.
+        """
+        
         self.data_ingestion_dir:str=os.path.join(
             training_pipeline_config.artifact_dir,training_pipeline.DATA_INGESTION_DIR_NAME
         )
