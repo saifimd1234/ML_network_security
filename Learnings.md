@@ -361,3 +361,27 @@ The code in your `__init__.py` file defines a set of constants that are used thr
 - **Maintainability**: Constants make your code easier to maintain and modify. Instead of changing a value in multiple places, you can update it in one location.
 - **Readability**: They make your code more readable and understandable by providing descriptive names for important values.
 - **Error Reduction**: Using constants can reduce errors by avoiding hardcoding values multiple times.
+
+The `main.py` script orchestrates the data ingestion process for the network security project. Here is a step-by-step explanation of the workflow:
+
+### Import Necessary Modules
+- The script imports various classes and modules required for data ingestion, exception handling, and logging.
+
+### Initialize Configuration
+- `TrainingPipelineConfig` is instantiated to set up the configuration for the training pipeline, including directories and timestamps.
+- `DataIngestionConfig` is instantiated using the `TrainingPipelineConfig` object to set up the configuration specific to data ingestion, such as file paths and database details.
+
+### Create Data Ingestion Object
+- An instance of the `DataIngestion` class is created using the `DataIngestionConfig` object. This object will handle the entire data ingestion process.
+
+### Initiate Data Ingestion
+- The `initiate_data_ingestion` method of the `DataIngestion` object is called to start the data ingestion process. This method performs the following steps:
+   - **Export Data from MongoDB**: Fetches data from the specified MongoDB collection and converts it into a pandas DataFrame.
+   - **Save Data to Feature Store**: Saves the DataFrame to a CSV file in the feature store directory.
+   - **Split Data into Training and Testing Sets**: Splits the DataFrame into training and testing sets and saves them as separate CSV files.
+
+### Log and Print Results
+- The script logs the successful completion of the data ingestion process and prints the paths to the training and testing files.
+
+### Exception Handling
+- If any exception occurs during the process, it is caught and a `NetworkSecurityException` is raised with the relevant error details.
