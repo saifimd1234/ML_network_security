@@ -8,8 +8,8 @@ import sys
 
 if __name__ == '__main__':
     try:
-        trainingpiprlineconfig = TrainingPipelineConfig()
-        dataingestionconfig = DataIngestionConfig(trainingpiprlineconfig)
+        trainingpipelineconfig = TrainingPipelineConfig()
+        dataingestionconfig = DataIngestionConfig(trainingpipelineconfig)
         data_ingestion = DataIngestion(dataingestionconfig)
         logging.info("Data Ingestion object created successfully.")
         dataingestionartifact = data_ingestion.initiate_data_ingestion()
