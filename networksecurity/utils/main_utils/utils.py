@@ -10,10 +10,43 @@ from sklearn.metrics import r2_score
 from sklearn.model_selection import GridSearchCV
 
 def read_yaml_file(file_path: str) -> dict:
+    """
+    Reads a YAML file and returns its contents as a dictionary.
+    
+    Args:
+        file_path (str): Path to the YAML file.
+        
+    Returns:
+        dict: Contents of the YAML file.
+        
+    Raises:
+        NetworkSecurityException: If there is an error reading the file.
+    """
     try:
         with open(file_path, "rb") as yaml_file:
             return yaml.safe_load(yaml_file)
     
     except Exception as e:
-        raise NetworkSecurityException(e, sys) from e
+        raise NetworkSecurityException(e, sys)
     
+def write_yaml_file(file_path: str, content: object, replace: bool = False) -> None:
+    """
+    Writes content to a YAML file. Optionally replaces the file if it already exists.
+    
+    Args:
+        file_path (str): Path to the YAML file.
+        content (object): Content to write to the file.
+        replace (bool, optional): Whether to replace the file if it exists. Defaults to False.
+        
+    Raises:
+        NetworkSecurityException: If there is an error writing to the file.
+    """
+    try:
+        if replace:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, "w") as file:
+            yaml.dump(content, file)
+    except Exception as e:
+        raise NetworkSecurityException(e, sys)
