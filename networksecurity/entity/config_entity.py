@@ -7,11 +7,10 @@ print(training_pipeline.PIPELINE_NAME)
 
 class TrainingPipelineConfig:
     """
-    Configuration class for the overall training pipeline that manages artifact directories
-    and timestamps.
+    Configuration class for the overall training pipeline that manages artifact directories and timestamps.
     """
 
-    def __init__(self,timestamp=datetime.now()):
+    def __init__(self, timestamp=datetime.now()):
         """
         Initialize the TrainingPipelineConfig with timestamp and directory paths.
         
@@ -32,21 +31,19 @@ class TrainingPipelineConfig:
 
 class DataIngestionConfig:
     """
-    Configuration class for the data ingestion process that defines file paths and parameters
-    for data extraction and storage.
+    Configuration class for the data ingestion process that defines file paths and parameters for data extraction and storage.
     """
 
-    def __init__(self,training_pipeline_config:TrainingPipelineConfig):
+    def __init__(self, training_pipeline_config: TrainingPipelineConfig):
         """
         Initialize the DataIngestionConfig with necessary file paths and parameters.
         
         Args:
-            training_pipeline_config (TrainingPipelineConfig): Configuration object containing
-                base artifact directory and other pipeline settings.
+            training_pipeline_config (TrainingPipelineConfig): Configuration object containing base artifact directory and other pipeline settings.
         """
         
-        self.data_ingestion_dir:str=os.path.join(
-            training_pipeline_config.artifact_dir,training_pipeline.DATA_INGESTION_DIR_NAME
+        self.data_ingestion_dir: str = os.path.join(
+            training_pipeline_config.artifact_dir, training_pipeline.DATA_INGESTION_DIR_NAME
         )
         self.feature_store_file_path: str = os.path.join(
                 self.data_ingestion_dir, training_pipeline.DATA_INGESTION_FEATURE_STORE_DIR, training_pipeline.FILE_NAME
