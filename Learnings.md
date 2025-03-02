@@ -484,5 +484,15 @@ def detect_drift_js(reference_data, current_data, feature, threshold=0.1):
     drift_detected = js_distance > threshold
     return drift_detected, js_distance
 ```
-
 You can apply these tests to each feature in your dataset to identify which features are experiencing drift, and then generate a comprehensive drift report for your data validation step.
+
+### schema.yaml
+The `schema.yaml` file defines the schema for the dataset used in the network security project. It specifies the columns, their data types, and categorizes them into numerical columns. Here is a breakdown of its purpose:
+
+### Column Definitions:
+- The `columns` section lists all the columns in the dataset along with their data types (in this case, all columns are of type `int64`).
+
+### Numerical Columns:
+- The `numerical_columns` section lists the columns that are considered numerical. This can be useful for data validation, preprocessing, and feature engineering steps where numerical columns need to be treated differently from categorical or other types of columns.
+
+This schema file can be used to ensure that the data conforms to the expected structure and types, which is crucial for data validation and preprocessing steps in the machine learning pipeline.
