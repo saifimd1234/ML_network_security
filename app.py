@@ -54,6 +54,7 @@ async def index():
     Root endpoint that redirects to the API documentation.
     
     Returns:
+
         RedirectResponse: Redirects the user to the FastAPI Swagger documentation page.
     """
     return RedirectResponse(url="/docs")
@@ -80,6 +81,7 @@ async def train_route():
     
     except Exception as e:
         raise NetworkSecurityException(e, sys)
-    
+
+# Entry point of this app
 if __name__ == "__main__":
     app_run(app, host="localhost", port=8000)
