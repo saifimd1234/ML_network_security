@@ -23,6 +23,8 @@ from sklearn.ensemble import (
 )
 import mlflow
 
+import dagshub
+dagshub.init(repo_owner='saifimd1234', repo_name='ML_network_security', mlflow=True)
 
 class ModelTrainer:
     """
