@@ -4,6 +4,7 @@ import os
 from networksecurity.constant import training_pipeline
 
 print(training_pipeline.PIPELINE_NAME)
+print(training_pipeline.ARTIFACT_DIR)
 
 class TrainingPipelineConfig:
     
@@ -160,3 +161,38 @@ class DataTransformationConfig:
             training_pipeline.DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR,
             training_pipeline.PREPROCESSING_OBJECT_FILE_NAME,
         )
+
+class ModelTrainerConfig:
+    """
+    Configuration class for model training phase.
+
+    This class encapsulates all configuration parameters needed during the model training process,
+    including directory structures for storing artifacts and trained models, as well as
+    performance thresholds.
+
+    Parameters
+    ----------
+    training_pipeline_config : TrainingPipelineConfig
+        Configuration object containing base artifact directory and other pipeline settings
+
+    Attributes
+    ----------
+    model_trainer_dir : str
+        Directory path where all model training artifacts will be stored
+    trained_model_file_path : str
+        Complete path where the trained model will be saved
+    expected_accuracy : float
+        The minimum expected accuracy score for the model to be considered acceptable
+    overfitting_underfitting_threshold : float
+        Threshold to determine if the model is overfitting or underfitting
+    """
+    def __init__(self,training_pipeline_config:TrainingPipelineConfig):
+        self.model_trainer_dir: str = os.path.join(
+            training_pipeline_config.artifact_dir, training_pipeline.MODEL_TRAINER_DIR_NAME
+        )
+        self.trained_model_file_path: str = os.path.join(
+            self.model_trainer_dir, training_pipeline.MODEL_TRAINER_TRAINED_MODEL_DIR, 
+            training_pipeline.MODEL_FILE_NAME
+        )
+        self.expected_accuracy: float = training_pipeline.MODEL_TRAINER_EXPECTED_SCORE
+        self.overfitting_underfitting_threshold = training_pipeline.MODEL_TRAINER_OVER_FIITING_UNDER_FITTING_THRESHOLD
