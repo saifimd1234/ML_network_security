@@ -6,8 +6,23 @@ from networksecurity.constant import training_pipeline
 print(training_pipeline.PIPELINE_NAME)
 
 class TrainingPipelineConfig:
+    
     """
-    Configuration class for the overall training pipeline that manages artifact directories and timestamps.
+    Configuration class for the ML network security training pipeline.
+    This class manages the directory structure and timestamping for training artifacts,
+    providing a consistent way to organize outputs across training runs. It creates
+    timestamped directories for artifacts and establishes paths for saving models and
+    other outputs.
+    Attributes:
+        pipeline_name (str): Name of the training pipeline from configuration.
+        artifact_name (str): Base directory name for artifacts from configuration.
+        artifact_dir (str): Full path to timestamped artifact directory.
+        model_dir (str): Directory path for storing the final trained models.
+        timestamp (str): Formatted timestamp string (MM_DD_YYYY_HH_MM_SS).
+    Example:
+        >>> config = TrainingPipelineConfig()
+        >>> print(config.artifact_dir)  # Shows timestamped artifact directory
+        >>> print(config.model_dir)     # Shows model directory path
     """
 
     def __init__(self, timestamp=datetime.now()):
@@ -30,8 +45,24 @@ class TrainingPipelineConfig:
 
 
 class DataIngestionConfig:
+    
     """
-    Configuration class for the data ingestion process that defines file paths and parameters for data extraction and storage.
+    Configuration class for managing data ingestion parameters and file paths.
+    This class handles all configuration related to the data extraction, storage, and splitting
+    process during the data ingestion phase of the machine learning pipeline. It defines the directory
+    structure for storing raw and processed data, as well as parameters for the train-test split
+    and database connection details.
+    Attributes:
+        data_ingestion_dir (str): Base directory for all data ingestion artifacts.
+        feature_store_file_path (str): Path to store the extracted feature data.
+        training_file_path (str): Path to store the training dataset after train-test split.
+        testing_file_path (str): Path to store the testing dataset after train-test split.
+        train_test_split_ratio (float): Ratio to split data into training and testing sets.
+        collection_name (str): MongoDB collection name to extract data from.
+        database_name (str): MongoDB database name containing the collection.
+    Note:
+        This class requires a TrainingPipelineConfig instance to initialize its paths relative
+        to the main artifact directory of the training pipeline.
     """
 
     def __init__(self, training_pipeline_config: TrainingPipelineConfig):
@@ -61,8 +92,21 @@ class DataIngestionConfig:
 
 class DataValidationConfig:
     """
-    Configuration class for the data validation process that defines file paths for storing 
-    validation results, drift reports, and valid/invalid data sets.
+    Configuration class for the data validation process.
+    This class defines the file paths for storing validation results, drift reports, and valid/invalid data sets.
+    It initializes these paths based on the provided TrainingPipelineConfig object.
+    
+    Attributes:
+        data_validation_dir (str): Directory for storing data validation artifacts.
+        valid_data_dir (str): Directory for storing valid data sets.
+        invalid_data_dir (str): Directory for storing invalid data sets.
+        valid_train_file_path (str): File path for storing the valid training data set.
+        valid_test_file_path (str): File path for storing the valid test data set.
+        invalid_train_file_path (str): File path for storing the invalid training data set.
+        invalid_test_file_path (str): File path for storing the invalid test data set.
+        drift_report_file_path (str): File path for storing the data drift report.
+        training_pipeline_config (TrainingPipelineConfig): Configuration object containing 
+        the base artifact directory and other pipeline settings.
     """
     
     def __init__(self, training_pipeline_config: TrainingPipelineConfig):
@@ -84,4 +128,35 @@ class DataValidationConfig:
             self.data_validation_dir,
             training_pipeline.DATA_VALIDATION_DRIFT_REPORT_DIR,
             training_pipeline.DATA_VALIDATION_DRIFT_REPORT_FILE_NAME,
+        )
+
+class DataTransformationConfig:
+    """
+    DataTransformationConfig is a configuration class for data transformation process in the machine learning pipeline.
+
+    Attributes:
+        data_transformation_dir (str): Directory where the data transformation artifacts will be stored.
+        transformed_train_file_path (str): File path for the transformed training data.
+        transformed_test_file_path (str): File path for the transformed test data.
+        transformed_object_file_path (str): File path for the transformed preprocessing object.
+
+    Args:
+        training_pipeline_config (TrainingPipelineConfig): Configuration for the training pipeline.
+    """
+    def __init__(self, training_pipeline_config: TrainingPipelineConfig):
+        self.data_transformation_dir: str = os.path.join(training_pipeline_config.artifact_dir, training_pipeline.DATA_TRANSFORMATION_DIR_NAME)
+        self.transformed_train_file_path: str = os.path.join(
+            self.data_transformation_dir,
+            training_pipeline.DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR,
+            training_pipeline.TRAIN_FILE_NAME.replace("csv", "npy"),
+        )
+        self.transformed_test_file_path: str = os.path.join(
+            self.data_transformation_dir,
+            training_pipeline.DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR,
+            training_pipeline.TEST_FILE_NAME.replace("csv", "npy"),
+        )
+        self.transformed_object_file_path: str = os.path.join(
+            self.data_transformation_dir,
+            training_pipeline.DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR,
+            training_pipeline.PREPROCESSING_OBJECT_FILE_NAME,
         )
