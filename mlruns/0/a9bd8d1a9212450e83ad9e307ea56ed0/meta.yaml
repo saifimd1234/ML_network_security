@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/saifi/GitHub/ML_network_security/mlruns/0/a9bd8d1a9212450e83ad9e307ea56ed0/artifacts
+end_time: 1741011386621
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: a9bd8d1a9212450e83ad9e307ea56ed0
+run_name: invincible-quail-505
+run_uuid: a9bd8d1a9212450e83ad9e307ea56ed0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1741011374166
+status: 3
+tags: []
+user_id: saifi
