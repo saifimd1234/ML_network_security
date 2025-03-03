@@ -15,6 +15,13 @@ from networksecurity.utils.main_utils.utils import load_numpy_array_data, evalua
 from networksecurity.utils.ml_utils.metric.classification_metric import get_classification_score
 
 class ModelTrainer:
+    """
+    ModelTrainer is responsible for training machine learning models for network security analysis.
+    This class loads transformed data, trains a model, and evaluates its performance to generate model artifacts.
+    Attributes:
+        model_trainer_config (ModelTrainerConfig): Configuration settings for model training
+        data_transformation_artifact (DataTransformationArtifact): Artifact containing paths to transformed data
+    """
     def __init__(self,model_trainer_config:ModelTrainerConfig,data_transformation_artifact:DataTransformationArtifact):
         try:
             self.model_trainer_config=model_trainer_config
@@ -25,6 +32,21 @@ class ModelTrainer:
         
 
     def initiate_model_trainer(self) -> ModelTrainerArtifact:
+        """
+        Initiates the model training process using transformed data.
+        This method:
+        1. Loads the transformed training and testing data
+        2. Splits the data into features and target variables
+        3. Trains a model using the specified configuration
+        4. Evaluates model performance on test data
+        Returns:
+            ModelTrainerArtifact: Contains information about the trained model including:
+                - Model file path
+                - Performance metrics like accuracy, precision, recall
+                - Training and testing metrics
+        Raises:
+            NetworkSecurityException: If any error occurs during model training
+        """
         try:
             train_file_path = self.data_transformation_artifact.transformed_train_file_path
             test_file_path = self.data_transformation_artifact.transformed_test_file_path
