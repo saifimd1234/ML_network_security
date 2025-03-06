@@ -555,3 +555,102 @@ Here are brief notes for setting up Docker on an EC2 instance. These commands en
   ```
 
 These steps will give you a fully functional Docker setup on your EC2 instance. 
+
+Here’s a concise and clear note summarizing the steps for setting up and using a **self-hosted GitHub Actions runner on an EC2 instance**. Save this for future reference:
+
+---
+
+### **Setting Up a Self-Hosted GitHub Actions Runner on EC2**
+
+1. **Pre-requisite: Docker Setup on EC2**
+   - Update and upgrade the EC2 instance:
+     ```bash
+     sudo apt-get update -y
+     sudo apt-get upgrade
+     ```
+   - Download and install Docker:
+     ```bash
+     curl -fsSL https://get.docker.com -o get-docker.sh
+     sudo sh get-docker.sh
+     ```
+   - Add the user `ubuntu` to the Docker group and apply the change:
+     ```bash
+     sudo usermod -aG docker ubuntu
+     newgrp docker
+     ```
+
+---
+
+2. **Go to GitHub Repository**:
+   - Navigate to **Settings** > **Actions** > **Runners**.
+   - Click **Create New Self-hosted Runner**.
+   - Select the **Linux** runner image. Follow the commands provided on the page.
+
+---
+
+3. **Commands for Setting Up the Runner**:
+
+#### a) **Download Section**:
+   - Run the commands exactly as provided on the GitHub page, in your EC2 instance:
+     ```bash
+     mkdir actions-runner && cd actions-runner
+     curl -o actions-runner-linux-x64-2.322.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.322.0/actions-runner-linux-x64-2.322.0.tar.gz
+     tar xzf ./actions-runner-linux-x64-2.322.0.tar.gz
+     ```
+
+#### b) **Configure Section**:
+   - Run the command to configure the runner. Press **Enter** to accept defaults for optional inputs:
+     ```bash
+     ./config.sh --url https://github.com/<owner>/<repository> --token <your-token>
+     ```
+   - During configuration:
+     - **Name of the runner group**: Press **Enter** (default option).
+     - **Name of the runner**: Provide the name used in `main.yaml` (`self-hosted`) or press **Enter** to skip.
+     - **Labels for the runner**: Press **Enter** to skip (default labels: `self-hosted`, `Linux`, `X64`).
+     - **Name of work folder**: Press **Enter** (default `_work`).
+
+   - Upon completion, you will see:
+     ```
+     √ Runner successfully added
+     √ Runner connection is good
+     √ Settings Saved.
+     ```
+
+#### c) **Run the Runner**:
+   - Start the runner using:
+     ```bash
+     ./run.sh
+     ```
+
+   - You’ll see confirmation:
+     ```
+     √ Connected to GitHub
+     Current runner version: '2.322.0'
+     Listening for Jobs
+     ```
+
+---
+
+4. **Validation in GitHub**:
+   - Go back to **GitHub Repository** > **Settings** > **Actions** > **Runners**.
+   - The runner will appear as **Idle** and is ready to listen for any workflow triggered by changes in the repository.
+
+---
+
+5. **Integration with `main.yaml`**:
+   - Ensure your `main.yaml` workflow uses the `self-hosted` runner:
+     ```yaml
+     Continuous-Deployment:
+       needs: build-and-push-ecr-image
+       runs-on: self-hosted
+       steps:
+         - name: Checkout Code
+           uses: actions/checkout@v3
+     ```
+
+---
+
+6. **Usage**:
+   - After setting everything up, any **push** or **change** in your GitHub repository will trigger the runner to execute workflows specified in the repository.
+
+---
