@@ -82,6 +82,10 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Stop and Remove Existing Container (if any)
+        run: |
+          docker ps -aq --filter "name=networksecurity" | xargs -r docker rm -f
+
       - name: Pull image from Amazon ECR
         run: |
           docker pull ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
@@ -92,6 +96,6 @@ jobs:
       
       - name: Clean previous images and containers
         run: |
-          docker system prune -f
+          docker system prune -af --volumes
 
 # Once this is done, the latest commit, go to EC2 instance
