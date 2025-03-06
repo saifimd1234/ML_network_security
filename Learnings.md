@@ -654,3 +654,114 @@ Here’s a concise and clear note summarizing the steps for setting up and using
    - After setting everything up, any **push** or **change** in your GitHub repository will trigger the runner to execute workflows specified in the repository.
 
 ---
+
+The commands for stopping and removing containers to avoid name conflicts should ideally be added to your **`main.yaml` file** within the relevant job or step of your GitHub Actions workflow.
+
+Here's how you can update your `main.yaml` file:
+
+---
+
+### **Where to Place the Cleanup Command**
+You should add the cleanup command in the job where you're deploying the container, likely under the `Continuous Deployment` job. Place it before the `docker run` command to ensure any existing container with the same name is stopped and removed.
+
+---
+
+### **Updated YAML Example**
+Here’s how your `Continuous Deployment` job might look after adding the cleanup step:
+
+```yaml
+Continuous-Deployment:
+  needs: build-and-push-ecr-image
+  runs-on: self-hosted
+  steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Stop and Remove Existing Container (if any)
+      run: |
+        docker ps -aq --filter "name=container-name" | xargs -r docker rm -f
+
+    - name: Deploy the Docker Container
+      run: |
+        docker run -d -p 8080:8000 --ipc="host" \
+          --name=container-name \
+          -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' \
+          -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' \
+          -e 'AWS_REGION=${{ secrets.AWS_REGION }}' \
+          image-repository-url:tag
+```
+
+---
+
+### **Explanation of the Cleanup Command**
+```bash
+docker ps -aq --filter "name=container-name" | xargs -r docker rm -f
+```
+- **`docker ps -aq --filter "name=container-name"`**: Lists all containers with the specified name (`container-name`), whether they're running or stopped.
+- **`xargs -r docker rm -f`**: Forcibly removes any container(s) returned by the above command.
+
+By including this step in the YAML file, you ensure that any existing container with the same name is removed before a new one is deployed. This prevents deployment failures due to name conflicts.
+
+---
+
+### **Why Include It in `main.yaml`?**
+- Automating this cleanup in the CI/CD pipeline avoids manual intervention and ensures smooth deployments every time.
+- It centralizes all deployment-related commands in your GitHub Actions workflow for better visibility and management.
+
+Here’s a well-structured note for you to review and revise later:
+
+---
+
+### **Configuring Security Group Inbound Rules for EC2**
+
+After resolving all setup and deployment issues, follow these steps to ensure your EC2 instance is accessible on the required port:
+
+1. **Navigate to Security Groups**:
+   - Go to the AWS **EC2 Console**.
+   - Select your **Instance ID**.
+   - Under the **Security** tab, find and click on the attached **Security Group**.
+
+2. **Edit Inbound Rules**:
+   - Click **Edit Inbound Rules** in the Security Group.
+
+3. **Set the Rules**:
+   - **Type**: Select **Custom TCP**.
+   - **Port Range**: Enter `8080` (this is the port exposed in the Docker container: `docker run -d -p 8080:8000`).
+   - **Source**: Set to `0.0.0.0/0`. This allows access from all IP addresses. *(Use cautiously as it opens the port to the internet; for enhanced security, you can restrict this to specific IPs or ranges).*
+
+4. **Save the Rules**:
+   - Click **Save Rules** to apply the changes.
+
+---
+
+### **Notes**:
+- **Purpose**: This configuration allows incoming traffic on port `8080` to reach your application hosted in the EC2 instance.
+- **Security Consideration**: Using `0.0.0.0/0` opens the port to all IPs. For production environments, restrict the **Source** to trusted IPs or ranges.
+
+
+---
+
+### **Accessing Your Application on EC2**
+
+1. **Navigate to Instance Details**:
+   - Go to the **AWS EC2 Console**.
+   - Select your **Instance ID**.
+
+2. **Find the Public IPv4 Address**:
+   - Locate the **Public IPv4 Address** under the instance details. Example: `3.90.160.53`.
+
+3. **Access the Application**:
+   - Open a web browser.
+   - Enter the public IP address followed by `:8080` (the port your application is running on). Example:
+     ```
+     3.90.160.53:8080
+     ```
+
+   - This should open your application served through the Docker container.
+
+---
+
+### **Important Note**:
+- Ensure that **inbound rules** in the security group allow traffic on port `8080` (type **Custom TCP**, port range `8080`, source `0.0.0.0/0`) for this to work.
+
+This note covers everything you need to access your application from a browser. 
