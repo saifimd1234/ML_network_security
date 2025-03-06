@@ -44,3 +44,23 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+# After building till here, update 5 secret keys in GitHub > Actions > Secrets and variables > 5 repository secrets
+# AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY (from security credentials)
+# AWS_REGION (default is us-east-1)
+# AWS_ECR_LOGIN_URI (in ECR page, remove the ECR repository name at the end)
+# ECR_REPOSITORY_NAME
+# Build a docker container and push it to ECR so that it can be deployed to ECS.
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
+          IMAGE_TAG: latest
+        run: |
+
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        
+          
