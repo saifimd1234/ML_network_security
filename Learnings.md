@@ -496,3 +496,62 @@ The `schema.yaml` file defines the schema for the dataset used in the network se
 - The `numerical_columns` section lists the columns that are considered numerical. This can be useful for data validation, preprocessing, and feature engineering steps where numerical columns need to be treated differently from categorical or other types of columns.
 
 This schema file can be used to ensure that the data conforms to the expected structure and types, which is crucial for data validation and preprocessing steps in the machine learning pipeline.
+
+
+Here are brief notes for setting up Docker on an EC2 instance. These commands ensure that Docker is installed and configured properly for use:
+
+---
+
+### **Basic Steps to Set Up Docker on an EC2 Instance**
+
+1. **Update Package List**:
+   ```bash
+   sudo apt-get update -y
+   ```
+   - Fetches the latest package lists and updates information about available software.
+
+2. **Upgrade Installed Packages**:
+   ```bash
+   sudo apt-get upgrade
+   ```
+   - Upgrades all installed packages to their latest versions to ensure compatibility and security.
+
+3. **Download Docker Installation Script**:
+   ```bash
+   curl -fsSL https://get.docker.com -o get-docker.sh
+   ```
+   - Fetches the official Docker installation script from Docker's repository.
+
+4. **Run the Docker Installation Script**:
+   ```bash
+   sudo sh get-docker.sh
+   ```
+   - Executes the script to install Docker on the instance, along with its dependencies.
+
+5. **Add Current User to the Docker Group**:
+   ```bash
+   sudo usermod -aG docker ubuntu
+   ```
+   - Adds the `ubuntu` user (default user in an EC2 instance) to the `docker` group, allowing the user to run Docker commands without `sudo`.
+
+6. **Activate Docker Group Membership**:
+   ```bash
+   newgrp docker
+   ```
+   - Refreshes the group membership for the current session, applying the changes made in the previous step without requiring a system restart.
+
+---
+
+### Notes:
+- **Why Use `newgrp docker`?**: It eliminates the need to log out and back in for group changes to take effect.
+- **Permissions**: Adding the user to the `docker` group ensures you can use Docker commands (`docker run`, `docker build`, etc.) without needing `sudo` every time.
+- **Post-Setup Check**: Verify Docker installation by running:
+  ```bash
+  docker --version
+  ```
+  Or check if Docker is working:
+  ```bash
+  docker run hello-world
+  ```
+
+These steps will give you a fully functional Docker setup on your EC2 instance. 
