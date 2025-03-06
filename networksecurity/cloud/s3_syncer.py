@@ -55,3 +55,12 @@ class S3Sync:
         """
         command = f"aws s3 sync  {aws_bucket_url} {folder} "
         os.system(command)
+
+# We sync it with the cloud to have various version of the model and data.
+# After installing AWS CLI, create a user in AWS IAM and configure the AWS CLI with the user's credentials.
+# The user should have the necessary permissions to access the specified S3 bucket.
+# Go to terminal here and write: aws configure
+# Enter the access key, secret key, region(us-east-1), and output format(json) when prompted.
+# Now the AWS CLI is configured with the user's credentials.
+# Now we can use the S3Sync class to synchronize files between local directories and AWS S3 buckets.
+# Run the app to check if everything is working fine, use: uvicorn app:app --reload
